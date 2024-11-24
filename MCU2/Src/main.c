@@ -60,6 +60,11 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 uint8_t rx_buff[10];
 // MM:SS
+void format_time(char* char_array, int seconds) {
+	int ss = seconds % 60;
+	int minutes = seconds / 60;
+	sprintf(char_array, "%02d:%02d", minutes, ss);
+}
 /* USER CODE END 0 */
 
 /**
@@ -101,6 +106,13 @@ int main(void)
   Lcd_HandleTypeDef lcd;
   // Lcd_create(ports, pins, RS_GPIO_Port, RS_Pin, EN_GPIO_Port, EN_Pin, LCD_4_BIT_MODE);
   lcd = Lcd_create(ports, pins, GPIOB, GPIO_PIN_5, GPIOB, GPIO_PIN_4, LCD_4_BIT_MODE);
+  const int study_seconds = 25*60;
+  const int break_seconds = 5*60;
+  int ct = study_seconds;
+  int is_study = 1;  // 1 is study, 0 is break
+  int prev_flag = -1;
+  int cur_flag = -1;
+  int is_paused = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,11 +122,59 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	        if(HAL_UART_Receive(&huart1, rx_buff, 10, 500)==HAL_OK) //if transfer is successful
+	        {
+	        	// 0 = pause
+	        	// 1 = start
+        		prev_flag = cur_flag;
+
+	        	cur_flag = rx_buff[0];
+	        	if (cur_flag != prev_flag && cur_flag == 1 && prev_flag != -1) {
+	        		is_paused = 0;
+	        		//prev_flag = 1;
+	        	}
+	        	else if(cur_flag != prev_flag && cur_flag == 0 && prev_flag != -1){
+	        		// pause the guy
+	        		is_paused = 1;
+
+	        	}
+
+
+	          __NOP(); //You need to toggle a breakpoint on this line!
+	        } else {
+	          __NOP();
+	        }
+	      if (is_paused == 1) {
+
+	    	  continue;
+
+	      }
 	  	  // ROW 1 -----------------------------------
 	  	  Lcd_cursor(&lcd, 0,0);
+	  	  if (is_study == 1) {
 	  		  Lcd_string(&lcd, "Study Time:");
+	  	  } else {
+	  		  Lcd_string(&lcd, "Break Time:");
+	  	  }
 
-
+	  	  // Row 2 -----------------------------------
+	  	  Lcd_cursor(&lcd, 1,0);
+	  	  char char_array[5];
+	  	  format_time(char_array, ct);
+	  	  Lcd_string(&lcd, char_array);
+	  	  if (ct == 0) {  // Switch
+	  		  HAL_Delay(2000);
+	  		  // Buzzer should ring now
+	  		  // send output voltage to first board
+	  		  if (is_study == 1) {  // switch to break
+	  			  ct = break_seconds + 1;
+	  			  is_study = 0;
+	  		  } else {  // switch to study
+	  			  ct = study_seconds + 1;
+	  			  is_study = 1;
+	  		  }
+	  	  }
+	  	  ct--;
 
 	        HAL_Delay (500);
   }
