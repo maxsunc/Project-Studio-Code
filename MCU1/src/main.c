@@ -101,48 +101,55 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
-	  HAL_UART_Transmit(&huart1, tx_buff, 10, 100);
-	  HAL_Delay(100);
 
-	  // testing for buttons to wokr
-	  if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_8)){
-		  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(0.1);
+//	  // testing for buttons to wokr
+//	  if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_8)){
+//		  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+////		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+////		  HAL_Delay(0.1);
+//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+//		  		  // start / pause
+//
+//	  }
+//	  // pause
+//	  else
+	 // tx_buff[0] = 1;
+	  if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_9)){
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		  // start / pause
+		  tx_buff[0]=0;
 	  }
-	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_9)){
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(0.9);
-	  }
-	  //B5
+//	  //B5
+	  // unpause
 	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_5)){
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		  // start / pause
 		  tx_buff[0]=1;
+
 	  }
 	  //B4
-	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_4)){
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(3);
-	  }
-	  // Button is not pressed
-	  //B10
-	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_10)){
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(4);
-	  }
-	  //A9
-	  else if(HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_7)){
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(5);
-	  }
-	  // Button is not pressed
-	  //A8
-	  else if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_8)){
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-		  HAL_Delay(6);
-	  }
+//	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_4)){
+//		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+//		  HAL_Delay(3);
+//	  }
+//	  // Button is not pressed
+//	  //B10
+//	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_10)){
+//		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+//		  HAL_Delay(4);
+//	  }
+//	  //A9
+//	  else if(HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_7)){
+//		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+//		  HAL_Delay(5);
+//	  }
+//	  // Button is not pressed
+//	  //A8
+//	  else if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_8)){
+//		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+//		  HAL_Delay(6);
+//	  }
 
 	  // Button is not pressed
 	  else{
@@ -156,7 +163,8 @@ int main(void)
 
 	  // Button is not pressed
 
-
+	  HAL_UART_Transmit(&huart1, tx_buff, 10, 500);
+	 	  HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -306,19 +314,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB10 PB4 PB5 PB8
-                           PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_8
-                          |GPIO_PIN_9;
+  /*Configure GPIO pins : PB4 PB5 PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PC7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
