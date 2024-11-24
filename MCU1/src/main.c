@@ -93,7 +93,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  int isBuzzing = 0; // 0 not buzzing, 1 is buzzing
+  int counter = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -117,6 +118,9 @@ int main(void)
 	 // tx_buff[0] = 1;
 	  if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_9)){
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		  if(isBuzzing == 0){
+			  isBuzzing = 1;
+		  }
 		  // start / pause
 		  tx_buff[0]=0;
 	  }
@@ -124,10 +128,26 @@ int main(void)
 	  // unpause
 	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_5)){
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		  if(isBuzzing == 0){
+			  isBuzzing = 1;
+		  }
 		  // start / pause
 		  tx_buff[0]=1;
 
 	  }
+
+
+	  // check for change in rx[0]
+	  if( isBuzzing == 1){
+		  while(500 > counter){
+			  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+			  HAL_Delay(1);
+			  counter++;
+		  }
+		  isBuzzing = 0;
+		  counter = 0;
+	  }
+
 	  //B4
 //	  else if(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_4)){
 //		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
